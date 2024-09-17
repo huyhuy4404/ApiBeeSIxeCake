@@ -8,9 +8,9 @@ import lombok.Data;
 public class ProductDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idproductdetail;
+    private Integer idproductdetail;
     private Float unitprice;
-    private int quantitystock;
+    private Integer quantityinstock;
     @ManyToOne
     @JoinColumn(name = "idproduct")
     private Product product;
