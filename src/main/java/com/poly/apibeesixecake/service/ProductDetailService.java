@@ -85,4 +85,8 @@ public class ProductDetailService {
         }
         productDetailRepository.deleteById(idproductdetail);
     }
+
+    public List<ProductDetail> getProductDetailsByProductId(Integer idproduct) {
+        return productDetailRepository.findByProduct_Idproduct(idproduct);
+    }
 }

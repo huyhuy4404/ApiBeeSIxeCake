@@ -31,6 +31,15 @@ public class ProductDetailController {
         return new ResponseEntity<>("Chi tiết sản phẩm không tồn tại.", HttpStatus.NOT_FOUND);
     }
 
+    @GetMapping("/product/{idproduct}")
+    public ResponseEntity<?> getProductDetailsByProductId(@PathVariable Integer idproduct) {
+        List<ProductDetail> productDetails = productDetailService.getProductDetailsByProductId(idproduct);
+        if (productDetails.isEmpty()) {
+            return new ResponseEntity<>("Không có chi tiết sản phẩm cho sản phẩm này.", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(productDetails, HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<?> createProductDetail(@RequestBody ProductDetail productDetail) {
         try {
