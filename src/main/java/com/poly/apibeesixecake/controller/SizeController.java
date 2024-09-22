@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -16,27 +17,31 @@ public class SizeController {
     private SizeService sizeService;
 
     @GetMapping
-    public ResponseEntity<?> getAllSize() {
+    public ResponseEntity<List<Size>> getAllSize() {
         List<Size> sizes = sizeService.getAllSize();
-        return new ResponseEntity<>(sizes, HttpStatus.OK);
+        return ResponseEntity.ok(sizes);
     }
 
     @GetMapping("/{idsize}")
     public ResponseEntity<?> getSizeById(@PathVariable Integer idsize) {
         Size size = sizeService.getSizeById(idsize);
-        if (size != null) {
-            return new ResponseEntity<>(size, HttpStatus.OK);
+        if (size == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
+                put("error", "Kích thước không tồn tại.");
+            }});
         }
-        return new ResponseEntity<>("Kích thước không tồn tại.", HttpStatus.NOT_FOUND);
+        return ResponseEntity.ok(size);
     }
 
     @PostMapping
     public ResponseEntity<?> createSize(@RequestBody Size size) {
         try {
             Size createdSize = sizeService.createSize(size);
-            return new ResponseEntity<>(createdSize, HttpStatus.CREATED);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdSize);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(new HashMap<String, String>() {{
+                put("error", e.getMessage());
+            }});
         }
     }
 
@@ -44,27 +49,36 @@ public class SizeController {
     public ResponseEntity<?> updateSize(@PathVariable Integer idsize, @RequestBody Size sizeDetails) {
         try {
             Size updatedSize = sizeService.updateSize(idsize, sizeDetails);
-            if (updatedSize != null) {
-                return new ResponseEntity<>(updatedSize, HttpStatus.OK);
+            if (updatedSize == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
+                    put("error", "Kích thước không tồn tại.");
+                }});
             }
-            return new ResponseEntity<>("Kích thước không tồn tại.", HttpStatus.NOT_FOUND);
+            return ResponseEntity.ok(updatedSize);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(new HashMap<String, String>() {{
+                put("error", e.getMessage());
+            }});
         }
     }
 
     @DeleteMapping("/{idsize}")
     public ResponseEntity<?> deleteSize(@PathVariable Integer idsize) {
-        // Kiểm tra xem idsize có tồn tại không
         if (sizeService.getSizeById(idsize) == null) {
-            return new ResponseEntity<>("Kích thước không tồn tại.", HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
+                put("error", "Kích thước không tồn tại.");
+            }});
         }
 
         try {
             sizeService.deleteSize(idsize);
-            return new ResponseEntity<>("Xóa thành công.", HttpStatus.OK);
+            return ResponseEntity.ok(new HashMap<String, String>() {{
+                put("message", "Xóa thành công.");
+            }});
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(new HashMap<String, String>() {{
+                put("error", e.getMessage());
+            }});
         }
     }
 }

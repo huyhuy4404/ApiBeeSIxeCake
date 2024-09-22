@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -19,25 +20,29 @@ public class CategoryController {
     @GetMapping
     public ResponseEntity<?> getAllCategory() {
         List<Category> categories = categoryService.getAllCategory();
-        return new ResponseEntity<>(categories, HttpStatus.OK);
+        return ResponseEntity.ok(categories);
     }
 
     @GetMapping("/{idcategory}")
     public ResponseEntity<?> getCategoryById(@PathVariable Integer idcategory) {
         Category category = categoryService.getCategoryById(idcategory);
         if (category != null) {
-            return new ResponseEntity<>(category, HttpStatus.OK);
+            return ResponseEntity.ok(category);
         }
-        return new ResponseEntity<>("Loại sản phẩm không tồn tại.", HttpStatus.NOT_FOUND);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
+            put("error", "Loại sản phẩm không tồn tại.");
+        }});
     }
 
     @PostMapping
     public ResponseEntity<?> createCategory(@RequestBody Category category) {
         try {
             Category createdCategory = categoryService.createCategory(category);
-            return new ResponseEntity<>(createdCategory, HttpStatus.CREATED);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(new HashMap<String, String>() {{
+                put("error", e.getMessage());
+            }});
         }
     }
 
@@ -46,11 +51,15 @@ public class CategoryController {
         try {
             Category updatedCategory = categoryService.updateCategory(idcategory, categoryDetails);
             if (updatedCategory != null) {
-                return new ResponseEntity<>(updatedCategory, HttpStatus.OK);
+                return ResponseEntity.ok(updatedCategory);
             }
-            return new ResponseEntity<>("Loại sản phẩm không tồn tại.", HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
+                put("error", "Loại sản phẩm không tồn tại.");
+            }});
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(new HashMap<String, String>() {{
+                put("error", e.getMessage());
+            }});
         }
     }
 
@@ -58,23 +67,32 @@ public class CategoryController {
     public ResponseEntity<?> deleteCategory(@PathVariable Integer idcategory) {
         // Kiểm tra xem idcategory có tồn tại không
         if (categoryService.getCategoryById(idcategory) == null) {
-            return new ResponseEntity<>("Loại sản phẩm không tồn tại.", HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
+                put("error", "Loại sản phẩm không tồn tại.");
+            }});
         }
 
         try {
             categoryService.deleteCategory(idcategory);
-            return new ResponseEntity<>("Xóa thành công.", HttpStatus.OK);
+            return ResponseEntity.ok(new HashMap<String, String>() {{
+                put("message", "Xóa thành công.");
+            }});
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(" Loại sản phẩm này không thể xóa vì đã có sản phẩm được tạo trong loại sản phẩm này", HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(new HashMap<String, String>() {{
+                put("error", "Loại sản phẩm này không thể xóa vì đã có sản phẩm được tạo trong loại sản phẩm này");
+            }});
         }
     }
+
     @GetMapping("/{idcategory}/products")
     public ResponseEntity<?> getProductsByCategory(@PathVariable Integer idcategory) {
         try {
             List<Product> products = categoryService.getProductsByCategory(idcategory);
-            return new ResponseEntity<>(products, HttpStatus.OK);
+            return ResponseEntity.ok(products);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
+                put("error", e.getMessage());
+            }});
         }
     }
 }
