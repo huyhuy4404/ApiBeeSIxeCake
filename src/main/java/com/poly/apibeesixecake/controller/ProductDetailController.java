@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -17,36 +18,42 @@ public class ProductDetailController {
     private ProductDetailService productDetailService;
 
     @GetMapping
-    public ResponseEntity<?> getAllProductDetails() {
+    public ResponseEntity<List<ProductDetail>> getAllProductDetails() {
         List<ProductDetail> productDetails = productDetailService.getAllProductDetails();
-        return new ResponseEntity<>(productDetails, HttpStatus.OK);
+        return ResponseEntity.ok(productDetails);
     }
 
     @GetMapping("/{idproductdetail}")
     public ResponseEntity<?> getProductDetailById(@PathVariable Integer idproductdetail) {
         ProductDetail productDetail = productDetailService.getProductDetailById(idproductdetail);
-        if (productDetail != null) {
-            return new ResponseEntity<>(productDetail, HttpStatus.OK);
+        if (productDetail == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
+                put("error", "Chi tiết sản phẩm không tồn tại.");
+            }});
         }
-        return new ResponseEntity<>("Chi tiết sản phẩm không tồn tại.", HttpStatus.NOT_FOUND);
+        return ResponseEntity.ok(productDetail);
     }
 
     @GetMapping("/product/{idproduct}")
     public ResponseEntity<?> getProductDetailsByProductId(@PathVariable Integer idproduct) {
         List<ProductDetail> productDetails = productDetailService.getProductDetailsByProductId(idproduct);
         if (productDetails.isEmpty()) {
-            return new ResponseEntity<>("Không có chi tiết sản phẩm cho sản phẩm này.", HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
+                put("error", "Không có chi tiết sản phẩm cho sản phẩm này.");
+            }});
         }
-        return new ResponseEntity<>(productDetails, HttpStatus.OK);
+        return ResponseEntity.ok(productDetails);
     }
 
     @PostMapping
     public ResponseEntity<?> createProductDetail(@RequestBody ProductDetail productDetail) {
         try {
             ProductDetail createdProductDetail = productDetailService.createProductDetail(productDetail);
-            return new ResponseEntity<>(createdProductDetail, HttpStatus.CREATED);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdProductDetail);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(new HashMap<String, String>() {{
+                put("error", e.getMessage());
+            }});
         }
     }
 
@@ -54,12 +61,16 @@ public class ProductDetailController {
     public ResponseEntity<?> updateProductDetail(@PathVariable Integer idproductdetail, @RequestBody ProductDetail productDetailDetails) {
         try {
             ProductDetail updatedProductDetail = productDetailService.updateProductDetail(idproductdetail, productDetailDetails);
-            if (updatedProductDetail != null) {
-                return new ResponseEntity<>(updatedProductDetail, HttpStatus.OK);
+            if (updatedProductDetail == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
+                    put("error", "Chi tiết sản phẩm không tồn tại.");
+                }});
             }
-            return new ResponseEntity<>("Chi tiết sản phẩm không tồn tại.", HttpStatus.NOT_FOUND);
+            return ResponseEntity.ok(updatedProductDetail);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(new HashMap<String, String>() {{
+                put("error", e.getMessage());
+            }});
         }
     }
 
@@ -67,9 +78,13 @@ public class ProductDetailController {
     public ResponseEntity<?> deleteProductDetail(@PathVariable Integer idproductdetail) {
         try {
             productDetailService.deleteProductDetail(idproductdetail);
-            return new ResponseEntity<>("Xóa thành công.", HttpStatus.OK);
+            return ResponseEntity.ok(new HashMap<String, String>() {{
+                put("message", "Xóa thành công.");
+            }});
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
+                put("error", e.getMessage());
+            }});
         }
     }
 }
