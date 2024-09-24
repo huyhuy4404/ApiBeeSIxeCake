@@ -79,6 +79,10 @@ public class AccountService { // Đổi tên lớp thành AccountService cho nh�
         return null;
     }
     public void deleteAccount(String idaccount) {
-        accountRepository.deleteById(idaccount);
+        Account account = accountRepository.findById(idaccount).orElse(null);
+        if (account == null) {
+            throw new RuntimeException("Tài khoản không tồn tại.");
+        }
+        accountRepository.delete(account);
     }
 }
