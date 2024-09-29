@@ -19,7 +19,7 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @Autowired  // Thêm @Autowired vào đây
+    @Autowired
     private CategoryService categoryService;
 
     @GetMapping
@@ -78,11 +78,6 @@ public class ProductController {
     public ResponseEntity<?> updateProduct(@PathVariable Integer idproduct, @RequestBody Product productDetails) {
         try {
             Product updatedProduct = productService.updateProduct(idproduct, productDetails);
-            if (updatedProduct == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
-                    put("error", "Sản phẩm không tồn tại.");
-                }});
-            }
             return ResponseEntity.ok(updatedProduct);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new HashMap<String, String>() {{

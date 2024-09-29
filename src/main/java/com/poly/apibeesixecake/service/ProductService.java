@@ -69,7 +69,7 @@ public class ProductService {
 
             return productRepository.save(product);
         }
-        return null;
+        throw new IllegalArgumentException("Sản phẩm không tồn tại.");
     }
 
     public void deleteProduct(Integer idproduct) {
