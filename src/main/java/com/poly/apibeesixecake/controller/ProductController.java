@@ -1,6 +1,8 @@
 package com.poly.apibeesixecake.controller;
 
+import com.poly.apibeesixecake.model.Category;
 import com.poly.apibeesixecake.model.Product;
+import com.poly.apibeesixecake.service.CategoryService;
 import com.poly.apibeesixecake.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,9 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired  // Thêm @Autowired vào đây
+    private CategoryService categoryService;
 
     @GetMapping
     public ResponseEntity<List<Product>> getAllProducts() {
@@ -35,8 +40,31 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createProduct(@RequestBody Product product) {
+    public ResponseEntity<?> createProduct(@RequestParam("productname") String productname,
+                                           @RequestParam("img") String img,
+                                           @RequestParam("description") String description,
+                                           @RequestParam("isactive") Boolean isactive,
+                                           @RequestParam("category.idcategory") Integer categoryId) {
         try {
+            // Kiểm tra các tham số bắt buộc
+            if (productname == null || productname.trim().isEmpty()) {
+                throw new IllegalArgumentException("Tên sản phẩm không được để trống.");
+            }
+
+            // Tạo đối tượng Product và thiết lập các thuộc tính
+            Product product = new Product();
+            product.setProductname(productname);
+            product.setImg(img);
+            product.setDescription(description);
+            product.setIsactive(isactive);
+
+            // Tìm kiếm danh mục
+            Category category = categoryService.getCategoryById(categoryId);
+            if (category == null) {
+                throw new IllegalArgumentException("Danh mục không tồn tại.");
+            }
+            product.setCategory(category);
+
             Product createdProduct = productService.createProduct(product);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
         } catch (IllegalArgumentException e) {
