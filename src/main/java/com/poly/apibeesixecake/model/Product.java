@@ -1,13 +1,11 @@
 package com.poly.apibeesixecake.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
 @Entity
 @Table(name = "Products")
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
