@@ -39,6 +39,7 @@ public class DiscountService {
             existingDiscount.setDiscountpercentage(discountDetails.getDiscountpercentage());
             existingDiscount.setStartdate(discountDetails.getStartdate());
             existingDiscount.setEnddate(discountDetails.getEnddate());
+            existingDiscount.setLowestprice(discountDetails.getLowestprice());
             return discountRepository.save(existingDiscount);
         }
         return null;
