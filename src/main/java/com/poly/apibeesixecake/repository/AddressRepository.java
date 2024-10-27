@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Integer> {
     List<Address> findByAccount_Idaccount(String idaccount);
+    List<Address> findByAccount_IdaccountAndIsDefaultTrue(String idaccount);
 }

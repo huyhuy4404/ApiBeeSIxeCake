@@ -14,4 +14,5 @@ public class Discount {
     private Double discountpercentage;
     private LocalDateTime startdate;
     private LocalDateTime enddate;
+    private Float lowestprice;
 }

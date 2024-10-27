@@ -2,13 +2,12 @@ package com.poly.apibeesixecake.service;
 
 import com.poly.apibeesixecake.model.CartItem;
 import com.poly.apibeesixecake.model.ProductDetail;
-import com.poly.apibeesixecake.model.ShoppingCart;
 import com.poly.apibeesixecake.repository.CartItemRepository;
 import com.poly.apibeesixecake.repository.ProductDetailRepository;
-import com.poly.apibeesixecake.repository.ShoppingCartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -17,8 +16,6 @@ public class CartItemService {
     @Autowired
     private CartItemRepository cartItemRepository;
 
-    @Autowired
-    private ShoppingCartRepository shoppingCartRepository;
 
     @Autowired
     private ProductDetailRepository productDetailRepository;
@@ -31,40 +28,49 @@ public class CartItemService {
         return cartItemRepository.findById(idcartitem).orElse(null);
     }
 
-    public List<CartItem> getCartItemsByShoppingCartId(Integer idshoppingcart) {
-        return cartItemRepository.findByShoppingcart_Idshoppingcart(idshoppingcart);
+    public List<CartItem> getCartItemsByIDaccount(String idaccount) {
+        return cartItemRepository.findByAccount_Idaccount(idaccount);
     }
 
     public CartItem createCartItem(CartItem cartItem) {
-        ShoppingCart shoppingCart = shoppingCartRepository.findById(cartItem.getShoppingcart().getIdshoppingcart())
-                .orElseThrow(() -> new IllegalArgumentException("Giỏ hàng không tồn tại."));
+        // Kiểm tra số lượng phải lớn hơn 0
+        if (cartItem.getQuantity() <= 0) {
+            throw new IllegalArgumentException("Số lượng phải lớn hơn 0.");
+        }
 
         ProductDetail productDetail = productDetailRepository.findById(cartItem.getProductdetail().getIdproductdetail())
                 .orElseThrow(() -> new IllegalArgumentException("Chi tiết sản phẩm không tồn tại."));
 
+        // Tính tổng số lượng đã đặt từ tất cả các tài khoản cho sản phẩm này
+        List<CartItem> existingItems = cartItemRepository.findByProductdetail_Idproductdetail(cartItem.getProductdetail().getIdproductdetail());
+        int totalQuantityOrdered = existingItems.stream().mapToInt(CartItem::getQuantity).sum();
+
         // Kiểm tra số lượng tối đa có thể thêm vào
-        if (cartItem.getQuantity() > productDetail.getQuantityinstock()) {
-            throw new IllegalArgumentException("Số lượng không được lớn hơn số lượng trong kho.");
+        int availableStock = productDetail.getQuantityinstock() - totalQuantityOrdered; // Số lượng còn lại có thể đặt
+        if (cartItem.getQuantity() > availableStock) {
+            throw new IllegalArgumentException("Số lượng không được lớn hơn số lượng còn lại trong kho: " + availableStock);
         }
 
         // Kiểm tra xem mục giỏ hàng đã tồn tại chưa
-        List<CartItem> existingItems = cartItemRepository.findByShoppingcart_Idshoppingcart(shoppingCart.getIdshoppingcart());
+        List<CartItem> userItems = cartItemRepository.findByAccount_IdaccountAndProductdetail_Idproductdetail(
+                cartItem.getAccount().getIdaccount(), cartItem.getProductdetail().getIdproductdetail());
 
-        for (CartItem existingItem : existingItems) {
-            if (existingItem.getProductdetail().getIdproductdetail().equals(cartItem.getProductdetail().getIdproductdetail())) {
-                // Nếu đã tồn tại, cộng dồn số lượng
-                int newQuantity = existingItem.getQuantity() + cartItem.getQuantity();
-                if (newQuantity > productDetail.getQuantityinstock()) {
-                    throw new IllegalArgumentException("Tổng số lượng không được lớn hơn số lượng trong kho.");
-                }
-                existingItem.setQuantity(newQuantity);
-                existingItem.setTotal(newQuantity * existingItem.getUnitprice());
-                return cartItemRepository.save(existingItem); // Cập nhật giỏ hàng
+        if (!userItems.isEmpty()) {
+            // Nếu đã tồn tại, cập nhật số lượng
+            CartItem existingCartItem = userItems.get(0);
+            int newQuantity = existingCartItem.getQuantity() + cartItem.getQuantity();
+
+            // Kiểm tra lại số lượng trong kho
+            if (newQuantity > availableStock) {
+                throw new IllegalArgumentException("Số lượng không được lớn hơn số lượng còn lại trong kho: " + availableStock);
             }
+
+            existingCartItem.setQuantity(newQuantity);
+            existingCartItem.setTotal(newQuantity * productDetail.getUnitprice());
+            return cartItemRepository.save(existingCartItem);
         }
 
         // Nếu chưa tồn tại, thêm mới
-        cartItem.setShoppingcart(shoppingCart);
         cartItem.setProductdetail(productDetail);
         cartItem.setUnitprice(productDetail.getUnitprice());
         cartItem.setTotal(cartItem.getQuantity() * cartItem.getUnitprice());
@@ -76,22 +82,22 @@ public class CartItemService {
         CartItem cartItem = cartItemRepository.findById(idcartitem)
                 .orElseThrow(() -> new IllegalArgumentException("Mục giỏ hàng không tồn tại."));
 
-        ShoppingCart shoppingCart = shoppingCartRepository.findById(cartItemDetails.getShoppingcart().getIdshoppingcart())
-                .orElseThrow(() -> new IllegalArgumentException("Giỏ hàng không tồn tại."));
-
-
         ProductDetail productDetail = productDetailRepository.findById(cartItemDetails.getProductdetail().getIdproductdetail())
                 .orElseThrow(() -> new IllegalArgumentException("Chi tiết sản phẩm không tồn tại."));
 
+        // Kiểm tra số lượng
+        if (cartItemDetails.getQuantity() <= 0) {
+            throw new IllegalArgumentException("Số lượng phải lớn hơn 0.");
+        }
+
+        // Kiểm tra số lượng không được lớn hơn số lượng trong kho
         if (cartItemDetails.getQuantity() > productDetail.getQuantityinstock()) {
             throw new IllegalArgumentException("Số lượng không được lớn hơn số lượng trong kho.");
         }
 
-        cartItem.setShoppingcart(shoppingCart);
-        cartItem.setProductdetail(productDetail);
+        // Cập nhật thông tin giỏ hàng
         cartItem.setQuantity(cartItemDetails.getQuantity());
         cartItem.setUnitprice(productDetail.getUnitprice());
-
         cartItem.setTotal(cartItem.getQuantity() * cartItem.getUnitprice());
 
         return cartItemRepository.save(cartItem);
@@ -102,5 +108,18 @@ public class CartItemService {
             throw new IllegalArgumentException("Mục giỏ hàng không tồn tại.");
         }
         cartItemRepository.deleteById(idcartitem);
+    }
+    public void updateCartItemsForExpiredProducts() {
+        List<CartItem> cartItems = cartItemRepository.findAll();
+        for (CartItem cartItem : cartItems) {
+            ProductDetail productDetail = productDetailRepository.findById(cartItem.getProductdetail().getIdproductdetail())
+                    .orElseThrow(() -> new IllegalArgumentException("Chi tiết sản phẩm không tồn tại."));
+
+            // Nếu sản phẩm hết hạn hoặc không còn trong kho, xử lý
+            if (productDetail.getQuantityinstock() <= 0 || productDetail.getExpirationdate().isBefore(LocalDateTime.now())) {
+                cartItem.setQuantity(0); // Hoặc xóa cartItem
+                cartItemRepository.save(cartItem);
+            }
+        }
     }
 }

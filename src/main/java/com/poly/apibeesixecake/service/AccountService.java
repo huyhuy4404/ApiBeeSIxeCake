@@ -49,7 +49,6 @@ public class AccountService { // Đổi tên lớp thành AccountService cho nh�
         }
 
         account.setActive(true);
-        account.setIdrole(2);
 
         return accountRepository.save(account);
     }

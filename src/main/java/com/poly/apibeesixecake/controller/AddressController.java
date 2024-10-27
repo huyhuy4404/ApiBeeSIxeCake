@@ -87,4 +87,14 @@ public class AddressController {
             }});
         }
     }
+    @GetMapping("/account/{idaccount}/default")
+    public ResponseEntity<?> getDefaultAddress(@PathVariable String idaccount) {
+        Address defaultAddress = addressService.getDefaultAddressByAccountId(idaccount);
+        if (defaultAddress == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
+                put("error", "Không tìm thấy địa chỉ mặc định cho tài khoản.");
+            }});
+        }
+        return ResponseEntity.ok(defaultAddress);
+    }
 }
