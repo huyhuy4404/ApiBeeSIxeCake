@@ -27,9 +27,7 @@ public class OrderController {
     public ResponseEntity<?> getOrderById(@PathVariable Integer idorder) {
         Order order = orderService.getOrderById(idorder);
         if (order == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
-                put("error", "Đơn hàng không tồn tại.");
-            }});
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createErrorResponse("Đơn hàng không tồn tại."));
         }
         return ResponseEntity.ok(order);
     }
@@ -43,17 +41,13 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<?> createOrder(@RequestBody Order order) {
         if (order == null || order.getAccount() == null) {
-            return ResponseEntity.badRequest().body(new HashMap<String, String>() {{
-                put("error", "Thông tin đơn hàng không hợp lệ.");
-            }});
+            return ResponseEntity.badRequest().body(createErrorResponse("Thông tin đơn hàng không hợp lệ."));
         }
         try {
             Order createdOrder = orderService.createOrder(order);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(new HashMap<String, String>() {{
-                put("error", e.getMessage());
-            }});
+            return ResponseEntity.badRequest().body(createErrorResponse(e.getMessage()));
         }
     }
 
@@ -62,15 +56,11 @@ public class OrderController {
         try {
             Order updatedOrder = orderService.updateOrder(idorder, orderDetails);
             if (updatedOrder == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
-                    put("error", "Đơn hàng không tồn tại.");
-                }});
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createErrorResponse("Đơn hàng không tồn tại."));
             }
             return ResponseEntity.ok(updatedOrder);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(new HashMap<String, String>() {{
-                put("error", e.getMessage());
-            }});
+            return ResponseEntity.badRequest().body(createErrorResponse(e.getMessage()));
         }
     }
 
@@ -78,13 +68,21 @@ public class OrderController {
     public ResponseEntity<?> deleteOrder(@PathVariable Integer idorder) {
         try {
             orderService.deleteOrder(idorder);
-            return ResponseEntity.ok(new HashMap<String, String>() {{
-                put("message", "Xóa thành công.");
-            }});
+            return ResponseEntity.ok(createSuccessResponse("Xóa thành công."));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
-                put("error", e.getMessage());
-            }});
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createErrorResponse(e.getMessage()));
         }
+    }
+
+    private HashMap<String, String> createErrorResponse(String message) {
+        return new HashMap<String, String>() {{
+            put("error", message);
+        }};
+    }
+
+    private HashMap<String, String> createSuccessResponse(String message) {
+        return new HashMap<String, String>() {{
+            put("message", message);
+        }};
     }
 }

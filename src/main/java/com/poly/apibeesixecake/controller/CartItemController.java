@@ -34,9 +34,9 @@ public class CartItemController {
         return ResponseEntity.ok(cartItem);
     }
 
-    @GetMapping("/shoppingcart/{idshoppingcart}")
-    public ResponseEntity<?> getCartItemsByShoppingCartId(@PathVariable Integer idshoppingcart) {
-        List<CartItem> cartItems = cartItemService.getCartItemsByShoppingCartId(idshoppingcart);
+    @GetMapping("/account/{idaccount}")
+    public ResponseEntity<?> getCartItemsByIdaccount(@PathVariable String idaccount) {
+        List<CartItem> cartItems = cartItemService.getCartItemsByIDaccount(idaccount);
         if (cartItems.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
                 put("error", "Không có mục giỏ hàng cho giỏ hàng này.");

@@ -2,7 +2,6 @@ package com.poly.apibeesixecake.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,6 +14,8 @@ public class Order {
 
     private LocalDateTime orderdate;
     private Double totalamount;
+    private String addressdetail;
+    private Float shipfee;
 
     @ManyToOne
     @JoinColumn(name = "idaccount")

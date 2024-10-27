@@ -15,9 +15,8 @@ public class CartItem {
     @Column(name = "Total", insertable = false, updatable = false)
     private Float total;
     @ManyToOne
-    @JoinColumn(name = "idshoppingcart")
-    private ShoppingCart shoppingcart;
-
+    @JoinColumn(name = "idaccount")
+    private Account account;
     @ManyToOne
     @JoinColumn(name = "idproductdetail")
     private ProductDetail productdetail;

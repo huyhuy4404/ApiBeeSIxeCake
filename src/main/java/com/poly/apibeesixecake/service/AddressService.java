@@ -30,6 +30,14 @@ public class AddressService {
         if (account == null) {
             throw new IllegalArgumentException("Tài khoản không tồn tại.");
         }
+
+        // Nếu chưa có địa chỉ nào, set isDefault = true
+        if (addressRepository.findByAccount_Idaccount(address.getAccount().getIdaccount()).isEmpty()) {
+            address.setIsDefault(true);
+        } else {
+            address.setIsDefault(false);
+        }
+
         address.setAccount(account);
         return addressRepository.save(address);
     }
@@ -41,12 +49,27 @@ public class AddressService {
             if (account == null) {
                 throw new IllegalArgumentException("Tài khoản không tồn tại.");
             }
+
+            // Nếu địa chỉ được cập nhật thành địa chỉ mặc định
+            if (addressDetails.getIsDefault() != null && addressDetails.getIsDefault()) {
+                // Đặt tất cả các địa chỉ khác thành không mặc định
+                List<Address> addresses = addressRepository.findByAccount_Idaccount(account.getIdaccount());
+                for (Address addr : addresses) {
+                    if (!addr.getIdaddress().equals(idaddress)) {
+                        addr.setIsDefault(false);
+                        addressRepository.save(addr);
+                    }
+                }
+            }
+
             address.setAccount(account);
             address.setHousenumber(addressDetails.getHousenumber());
             address.setRoadname(addressDetails.getRoadname());
             address.setWard(addressDetails.getWard());
             address.setDistrict(addressDetails.getDistrict());
             address.setCity(addressDetails.getCity());
+            address.setIsDefault(addressDetails.getIsDefault());
+
             return addressRepository.save(address);
         }
         return null;
@@ -62,5 +85,12 @@ public class AddressService {
             throw new IllegalArgumentException("Tài khoản không tồn tại.");
         }
         return addressRepository.findByAccount_Idaccount(idaccount);
+    }
+    public Address getDefaultAddressByAccountId(String idaccount) {
+        List<Address> defaultAddresses = addressRepository.findByAccount_IdaccountAndIsDefaultTrue(idaccount);
+        if (defaultAddresses.isEmpty()) {
+            return null; // Hoặc ném ngoại lệ tùy thuộc vào yêu cầu của bạn
+        }
+        return defaultAddresses.get(0); // Giả sử chỉ có một địa chỉ mặc định
     }
 }
