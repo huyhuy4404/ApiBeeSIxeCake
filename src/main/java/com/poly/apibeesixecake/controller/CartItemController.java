@@ -11,9 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/cartitem")
+@RequestMapping("/api/cartitems")
 public class CartItemController {
-
     @Autowired
     private CartItemService cartItemService;
 
@@ -28,21 +27,10 @@ public class CartItemController {
         CartItem cartItem = cartItemService.getCartItemById(idcartitem);
         if (cartItem == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
-                put("error", "Mục giỏ hàng không tồn tại.");
+                put("error", "Mặt hàng trong giỏ hàng không tồn tại.");
             }});
         }
         return ResponseEntity.ok(cartItem);
-    }
-
-    @GetMapping("/account/{idaccount}")
-    public ResponseEntity<?> getCartItemsByIdaccount(@PathVariable String idaccount) {
-        List<CartItem> cartItems = cartItemService.getCartItemsByIDaccount(idaccount);
-        if (cartItems.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
-                put("error", "Không có mục giỏ hàng cho giỏ hàng này.");
-            }});
-        }
-        return ResponseEntity.ok(cartItems);
     }
 
     @PostMapping
@@ -61,6 +49,11 @@ public class CartItemController {
     public ResponseEntity<?> updateCartItem(@PathVariable Integer idcartitem, @RequestBody CartItem cartItemDetails) {
         try {
             CartItem updatedCartItem = cartItemService.updateCartItem(idcartitem, cartItemDetails);
+            if (updatedCartItem == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
+                    put("error", "Mặt hàng trong giỏ hàng không tồn tại.");
+                }});
+            }
             return ResponseEntity.ok(updatedCartItem);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new HashMap<String, String>() {{
@@ -71,15 +64,21 @@ public class CartItemController {
 
     @DeleteMapping("/{idcartitem}")
     public ResponseEntity<?> deleteCartItem(@PathVariable Integer idcartitem) {
-        try {
-            cartItemService.deleteCartItem(idcartitem);
-            return ResponseEntity.ok(new HashMap<String, String>() {{
-                put("message", "Xóa mục giỏ hàng thành công.");
-            }});
-        } catch (IllegalArgumentException e) {
+        CartItem cartItem = cartItemService.getCartItemById(idcartitem);
+        if (cartItem == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
-                put("error", e.getMessage());
+                put("error", "Mặt hàng trong giỏ hàng không tồn tại.");
             }});
         }
+        cartItemService.deleteCartItem(idcartitem);
+        return ResponseEntity.ok(new HashMap<String, String>() {{
+            put("message", "Xóa mặt hàng trong giỏ hàng thành công.");
+        }});
+    }
+
+    @GetMapping("/shoppingcart/{idshoppingcart}")
+    public ResponseEntity<List<CartItem>> findByShoppingCartId(@PathVariable Integer idshoppingcart) {
+        List<CartItem> cartItems = cartItemService.findByShoppingCartId(idshoppingcart);
+        return ResponseEntity.ok(cartItems);
     }
 }

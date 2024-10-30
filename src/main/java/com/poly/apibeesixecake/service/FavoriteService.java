@@ -36,7 +36,6 @@ public class FavoriteService {
 
     public Favorite updateFavorite(Integer idfavorite, Favorite favoriteDetails) {
         Favorite favorite = getFavoriteById(idfavorite);
-        favorite.setLikeproduct(favoriteDetails.getLikeproduct());
         favorite.setProduct(favoriteDetails.getProduct());
         return favoriteRepository.save(favorite);
     }

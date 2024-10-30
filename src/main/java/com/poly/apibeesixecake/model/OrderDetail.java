@@ -1,4 +1,5 @@
 package com.poly.apibeesixecake.model;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -9,10 +10,8 @@ public class OrderDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idorderdetail;
-    private Float unitprice;
     private Integer quantity;
-    @Column(name = "Total", insertable = false, updatable = false)
-    private float total;
+
     @ManyToOne
     @JoinColumn(name = "idorder")
     private Order order;

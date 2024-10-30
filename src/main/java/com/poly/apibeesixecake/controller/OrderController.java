@@ -43,10 +43,12 @@ public class OrderController {
         if (order == null || order.getAccount() == null) {
             return ResponseEntity.badRequest().body(createErrorResponse("Thông tin đơn hàng không hợp lệ."));
         }
+
         try {
             Order createdOrder = orderService.createOrder(order);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
         } catch (IllegalArgumentException e) {
+            // Chuyển thông báo lỗi từ OrderService
             return ResponseEntity.badRequest().body(createErrorResponse(e.getMessage()));
         }
     }
@@ -60,9 +62,11 @@ public class OrderController {
             }
             return ResponseEntity.ok(updatedOrder);
         } catch (IllegalArgumentException e) {
+            // Chuyển thông báo lỗi từ OrderService
             return ResponseEntity.badRequest().body(createErrorResponse(e.getMessage()));
         }
     }
+
 
     @DeleteMapping("/{idorder}")
     public ResponseEntity<?> deleteOrder(@PathVariable Integer idorder) {

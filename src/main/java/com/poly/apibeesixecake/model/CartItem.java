@@ -11,13 +11,10 @@ public class CartItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idcartitem;
     private Integer quantity;
-    private Float unitprice;
-    @Column(name = "Total", insertable = false, updatable = false)
-    private Float total;
-    @ManyToOne
-    @JoinColumn(name = "idaccount")
-    private Account account;
     @ManyToOne
     @JoinColumn(name = "idproductdetail")
     private ProductDetail productdetail;
+    @ManyToOne
+    @JoinColumn(name = "idshoppingcart")
+    private ShoppingCart shoppingcart;
 }

@@ -20,10 +20,9 @@ public class OrderService {
     private PaymentRepository paymentRepository;
 
     @Autowired
-    private StatusRepository statusRepository;
-
+    private StatusPayRepository statusPayRepository;
     @Autowired
-    private AddressRepository addressRepository;
+    private DiscountRepository discountRepository;
 
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
@@ -38,9 +37,17 @@ public class OrderService {
     }
 
     public Order createOrder(Order order) {
-        if (order.getDiscount() != null && order.getDiscount().getIddiscount() == 0) {
-            order.setDiscount(null);
+        // Kiểm tra nếu discount không có id
+        if (order.getDiscount() != null) {
+            if (order.getDiscount().getIddiscount() == null) {
+                throw new IllegalArgumentException("Mã giảm giá không tồn tại."); // Ném lỗi nếu iddiscount không tồn tại
+            } else if (order.getDiscount().getIddiscount() == 0) {
+                order.setDiscount(null); // Không lưu discount
+            }
+        } else {
+            throw new IllegalArgumentException("Mã giảm giá không tồn tại.");
         }
+
         validateOrderDependencies(order);
         return orderRepository.save(order);
     }
@@ -49,20 +56,26 @@ public class OrderService {
         Order existingOrder = orderRepository.findById(idorder).orElse(null);
         if (existingOrder != null) {
             existingOrder.setOrderdate(orderDetails.getOrderdate());
-            existingOrder.setTotalamount(orderDetails.getTotalamount());
             existingOrder.setAddressdetail(orderDetails.getAddressdetail());
             existingOrder.setShipfee(orderDetails.getShipfee());
             existingOrder.setAccount(orderDetails.getAccount());
-            existingOrder.setStatus(orderDetails.getStatus());
-            existingOrder.setAddress(orderDetails.getAddress());
+            existingOrder.setPayment(orderDetails.getPayment());
 
-            if (orderDetails.getDiscount() != null && orderDetails.getDiscount().getIddiscount() == 0) {
-                existingOrder.setDiscount(null);
+            // Kiểm tra nếu discount không có id
+            if (orderDetails.getDiscount() != null) {
+                if (orderDetails.getDiscount().getIddiscount() == null) {
+                    throw new IllegalArgumentException("Mã giảm giá không tồn tại."); // Ném lỗi nếu iddiscount không tồn tại
+                } else if (orderDetails.getDiscount().getIddiscount() == 0) {
+                    existingOrder.setDiscount(null); // Không lưu discount
+                } else {
+                    existingOrder.setDiscount(orderDetails.getDiscount()); // Gán discount nếu id > 0
+                }
             } else {
-                existingOrder.setDiscount(orderDetails.getDiscount());
+                throw new IllegalArgumentException("Mã giảm giá không tồn tại.");
             }
 
-            existingOrder.setPayment(orderDetails.getPayment());
+            existingOrder.setIdstatuspay(orderDetails.getIdstatuspay()); // Thêm logic cho idstatuspay
+
             validateOrderDependencies(existingOrder);
             return orderRepository.save(existingOrder);
         }
@@ -82,12 +95,11 @@ public class OrderService {
         }
         if (order.getPayment() == null || !paymentRepository.existsById(order.getPayment().getIdpayment())) {
             throw new IllegalArgumentException("Phương thức thanh toán không tồn tại.");
+        }if (order.getIdstatuspay() == null || !statusPayRepository.existsById(order.getIdstatuspay())) {
+            throw new IllegalArgumentException("Trạng thái thanh toán không tồn tại.");
         }
-        if (order.getAddress() == null || !addressRepository.existsById(order.getAddress().getIdaddress())) {
-            throw new IllegalArgumentException("Địa chỉ không tồn tại.");
-        }
-        if (order.getStatus() == null || !statusRepository.existsById(order.getStatus().getIdstatus())) {
-            throw new IllegalArgumentException("Trạng thái không tồn tại.");
+        if (order.getDiscount() != null && !discountRepository.existsById(order.getDiscount().getIddiscount())) {
+            throw new IllegalArgumentException("Mã giảm giá không tồn tại.");
         }
     }
 }

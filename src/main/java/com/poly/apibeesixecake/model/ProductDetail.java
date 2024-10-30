@@ -1,8 +1,7 @@
 package com.poly.apibeesixecake.model;
+
 import jakarta.persistence.*;
 import lombok.Data;
-
-import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -13,8 +12,7 @@ public class ProductDetail {
     private Integer idproductdetail;
     private Float unitprice;
     private Integer quantityinstock;
-    private LocalDateTime manufacturedate;
-    private LocalDateTime expirationdate;
+
     @ManyToOne
     @JoinColumn(name = "idproduct")
     private Product product;

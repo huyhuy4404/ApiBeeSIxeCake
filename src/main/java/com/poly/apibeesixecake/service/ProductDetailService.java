@@ -63,9 +63,7 @@ public class ProductDetailService {
         Integer sizeId = productDetailDetails.getSize().getIdsize();
         Size size = sizeRepository.findById(sizeId)
                 .orElseThrow(() -> new IllegalArgumentException("Kích thước không tồn tại."));
-        if (productDetailDetails.getManufacturedate().isEqual(productDetailDetails.getExpirationdate())) {
-            productDetailDetails.setQuantityinstock(0);
-        }
+
         List<ProductDetail> existingProductDetails = productDetailRepository.findByProduct_Idproduct(productId);
         for (ProductDetail existing : existingProductDetails) {
             if (!existing.getIdproductdetail().equals(idproductdetail) && existing.getSize().getIdsize().equals(sizeId)) {
@@ -75,8 +73,6 @@ public class ProductDetailService {
 
         productDetail.setUnitprice(productDetailDetails.getUnitprice());
         productDetail.setQuantityinstock(productDetailDetails.getQuantityinstock());
-        productDetail.setManufacturedate(productDetailDetails.getManufacturedate());
-        productDetail.setExpirationdate(productDetailDetails.getExpirationdate());
         productDetail.setProduct(product);
         productDetail.setSize(size);
 
@@ -92,16 +88,5 @@ public class ProductDetailService {
 
     public List<ProductDetail> getProductDetailsByProductId(Integer idproduct) {
         return productDetailRepository.findByProduct_Idproduct(idproduct);
-    }
-    private void validateProductDetailDates(ProductDetail productDetail) {
-        if (productDetail.getManufacturedate() == null) {
-            throw new IllegalArgumentException("Ngày sản xuất không được để trống.");
-        }
-        if (productDetail.getExpirationdate() == null) {
-            throw new IllegalArgumentException("Ngày hết hạn không được để trống.");
-        }
-        if (productDetail.getManufacturedate().isAfter(productDetail.getExpirationdate())) {
-            throw new IllegalArgumentException("Ngày sản xuất không được sau ngày hết hạn.");
-        }
     }
 }

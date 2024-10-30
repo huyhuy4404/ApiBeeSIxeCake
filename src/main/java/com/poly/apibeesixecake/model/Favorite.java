@@ -18,6 +18,4 @@ public class Favorite {
     @ManyToOne
     @JoinColumn(name = "idproduct")
     private Product product;
-
-    private Boolean likeproduct;
 }

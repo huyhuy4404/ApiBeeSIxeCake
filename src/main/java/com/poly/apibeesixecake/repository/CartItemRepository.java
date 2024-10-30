@@ -8,11 +8,5 @@ import java.util.List;
 
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItem, Integer> {
-    List<CartItem> findByAccount_Idaccount(String idaccount);
-
-    // Thêm phương thức tìm kiếm theo tài khoản và chi tiết sản phẩm
-    List<CartItem> findByAccount_IdaccountAndProductdetail_Idproductdetail(String idaccount, Integer idproductdetail);
-
-    // Thêm phương thức tìm kiếm tất cả các CartItem theo id sản phẩm
-    List<CartItem> findByProductdetail_Idproductdetail(Integer idproductdetail);
+    List<CartItem> findByShoppingcart_Idshoppingcart(Integer idshoppingcart);
 }

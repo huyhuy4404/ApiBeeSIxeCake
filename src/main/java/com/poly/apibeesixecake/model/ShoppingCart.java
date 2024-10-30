@@ -3,23 +3,15 @@ package com.poly.apibeesixecake.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Entity
-@Table(name = "Notifications")
+@Table(name = "ShoppingCarts")
 @Data
-public class Notification {
+public class ShoppingCart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idnotification;
+    private Integer idshoppingcart;
 
     @ManyToOne
     @JoinColumn(name = "idaccount")
     private Account account;
-
-    private String notificationtext;
-
-    private Boolean isread;
-
-    private LocalDateTime createat;
 }

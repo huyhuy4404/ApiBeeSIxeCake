@@ -61,16 +61,13 @@ public class OrderDetailService {
                     throw new IllegalArgumentException("Tổng số lượng không được lớn hơn số lượng tồn kho.");
                 }
                 existingDetail.setQuantity(newQuantity);
-                existingDetail.setTotal(newQuantity * existingDetail.getUnitprice()); // Cập nhật tổng
                 return orderDetailRepository.save(existingDetail); // Cập nhật chi tiết đơn hàng
             }
         }
 
         // Nếu chưa tồn tại, thêm mới
-        orderDetail.setUnitprice(productDetail.getUnitprice());
         orderDetail.setOrder(order);
         orderDetail.setProductdetail(productDetail);
-        orderDetail.setTotal(orderDetail.getQuantity() * orderDetail.getUnitprice()); // Tính tổng
         return orderDetailRepository.save(orderDetail);
     }
 
@@ -91,11 +88,9 @@ public class OrderDetailService {
             throw new IllegalArgumentException("Số lượng không được lớn hơn số lượng tồn kho.");
         }
 
-        orderDetail.setUnitprice(productDetail.getUnitprice());
         orderDetail.setOrder(order);
         orderDetail.setProductdetail(productDetail);
         orderDetail.setQuantity(orderDetailDetails.getQuantity());
-        orderDetail.setTotal(orderDetail.getQuantity() * orderDetail.getUnitprice()); // Cập nhật tổng
 
         return orderDetailRepository.save(orderDetail);
     }
@@ -107,4 +102,3 @@ public class OrderDetailService {
         orderDetailRepository.deleteById(idorderdetail);
     }
 }
-

@@ -13,7 +13,6 @@ public class Order {
     private Integer idorder;
 
     private LocalDateTime orderdate;
-    private Double totalamount;
     private String addressdetail;
     private Float shipfee;
 
@@ -22,18 +21,13 @@ public class Order {
     private Account account;
 
     @ManyToOne
-    @JoinColumn(name = "idstatus")
-    private Status status;
-
-    @ManyToOne
-    @JoinColumn(name = "idaddress")
-    private Address address;
-
-    @ManyToOne
     @JoinColumn(name = "iddiscount")
     private Discount discount;
 
     @ManyToOne
     @JoinColumn(name = "idpayment")
     private Payment payment;
+
+    @Column(name = "idstatuspay")
+    private Integer idstatuspay;
 }
