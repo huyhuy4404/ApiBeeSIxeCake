@@ -31,7 +31,7 @@ public class OrderStatusHistoryService {
         if (!orderStatusHistoryRepository.existsById(id)) {
             throw new IllegalArgumentException("Không tìm thấy lịch sử trạng thái với ID: " + id);
         }
-        orderStatusHistory.setIdorderstatushistory(id);
+        orderStatusHistory.setIdstatushistory(id);
         return orderStatusHistoryRepository.save(orderStatusHistory);
     }
 

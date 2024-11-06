@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class OrderStatusHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idorderstatushistory;
+    private Integer idstatushistory;
 
     @ManyToOne
     @JoinColumn(name = "idorder")
