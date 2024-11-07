@@ -60,6 +60,7 @@ public class OrderService {
             existingOrder.setShipfee(orderDetails.getShipfee());
             existingOrder.setAccount(orderDetails.getAccount());
             existingOrder.setPayment(orderDetails.getPayment());
+            existingOrder.setTotal(orderDetails.getTotal());
 
             // Kiểm tra nếu discount không có id
             if (orderDetails.getDiscount() != null) {

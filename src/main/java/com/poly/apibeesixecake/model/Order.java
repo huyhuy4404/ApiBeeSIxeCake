@@ -15,6 +15,7 @@ public class Order {
     private LocalDateTime orderdate;
     private String addressdetail;
     private Float shipfee;
+    private Float total;
 
     @ManyToOne
     @JoinColumn(name = "idaccount")
