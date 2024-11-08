@@ -81,4 +81,37 @@ public class CartItemController {
         List<CartItem> cartItems = cartItemService.findByShoppingCartId(idshoppingcart);
         return ResponseEntity.ok(cartItems);
     }
+    @GetMapping("/productdetail/{idproductdetail}")
+    public ResponseEntity<?> findByProductDetailId(@PathVariable Integer idproductdetail) {
+        try {
+            List<CartItem> cartItems = cartItemService.findByProductDetailId(idproductdetail);
+            if (cartItems.isEmpty()) {
+                // Trường hợp không tìm thấy mặt hàng, trả về lỗi 404
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
+                    put("error", "Không tìm thấy mặt hàng với idproductdetail này.");
+                }});
+            }
+            // Trả về danh sách cartItems nếu tìm thấy mặt hàng
+            return ResponseEntity.ok(cartItems);
+        } catch (Exception e) {
+            // Xử lý lỗi bất kỳ xảy ra trong quá trình thực hiện
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new HashMap<String, String>() {{
+                put("error", "Đã xảy ra lỗi trong quá trình xử lý.");
+            }});
+        }
+    }
+
+    @DeleteMapping("/productdetail/{idproductdetail}")
+    public ResponseEntity<?> deleteByProductDetailId(@PathVariable Integer idproductdetail) {
+        try {
+            cartItemService.deleteByProductDetailId(idproductdetail);
+            return ResponseEntity.ok(new HashMap<String, String>() {{
+                put("message", "Xóa mặt hàng có idproductdetail thành công.");
+            }});
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String, String>() {{
+                put("error", e.getMessage());
+            }});
+        }
+    }
 }

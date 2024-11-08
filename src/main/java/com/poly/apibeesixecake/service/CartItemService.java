@@ -29,6 +29,9 @@ public class CartItemService {
     public CartItem getCartItemById(Integer idcartitem) {
         return cartItemRepository.findById(idcartitem).orElse(null);
     }
+    public List<CartItem> findByProductDetailId(Integer idproductdetail) {
+        return cartItemRepository.findByProductdetail_Idproductdetail(idproductdetail);
+    }
 
     public CartItem createCartItem(CartItem cartItem) {
         ShoppingCart shoppingCart = shoppingCartRepository.findById(cartItem.getShoppingcart().getIdshoppingcart()).orElse(null);
@@ -40,7 +43,9 @@ public class CartItemService {
         if (productDetail == null) {
             throw new IllegalArgumentException("Sản phẩm chi tiết không tồn tại.");
         }
-
+        if (cartItem.getQuantity() > productDetail.getQuantityinstock()) {
+            throw new IllegalArgumentException("Số lượng trong giỏ hàng không được vượt quá số lượng có sẵn trong kho.");
+        }
         cartItem.setShoppingcart(shoppingCart);
         cartItem.setProductdetail(productDetail);
         return cartItemRepository.save(cartItem);
@@ -57,6 +62,9 @@ public class CartItemService {
             ProductDetail productDetail = productDetailRepository.findById(cartItemDetails.getProductdetail().getIdproductdetail()).orElse(null);
             if (productDetail == null) {
                 throw new IllegalArgumentException("Sản phẩm chi tiết không tồn tại.");
+            }
+            if (cartItemDetails.getQuantity() > productDetail.getQuantityinstock()) {
+                throw new IllegalArgumentException("Số lượng trong giỏ hàng không được vượt quá số lượng có sẵn trong kho.");
             }
 
             cartItem.setQuantity(cartItemDetails.getQuantity());
@@ -76,5 +84,12 @@ public class CartItemService {
 
     public List<CartItem> findByShoppingCartId(Integer idshoppingcart) {
         return cartItemRepository.findByShoppingcart_Idshoppingcart(idshoppingcart);
+    }
+    public void deleteByProductDetailId(Integer idproductdetail) {
+        List<CartItem> cartItems = cartItemRepository.findByProductdetail_Idproductdetail(idproductdetail);
+        if (cartItems.isEmpty()) {
+            throw new IllegalArgumentException("Không tìm thấy mặt hàng này.");
+        }
+        cartItemRepository.deleteAll(cartItems);
     }
 }
