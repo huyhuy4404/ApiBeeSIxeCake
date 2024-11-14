@@ -30,9 +30,6 @@ public class Order {
     private Payment payment;
 
     @ManyToOne
-    @JoinColumn(name = "idstatus")
-    private Status idstatus;
-    @ManyToOne
     @JoinColumn(name = "idstatuspay")
     private StatusPay idstatuspay;
 }

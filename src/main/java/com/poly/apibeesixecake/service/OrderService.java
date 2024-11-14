@@ -21,8 +21,7 @@ public class OrderService {
 
     @Autowired
     private StatusPayRepository statusPayRepository;
-    @Autowired
-    private StatusRepository statusRepository;
+
     @Autowired
     private DiscountRepository discountRepository;
 
@@ -36,9 +35,6 @@ public class OrderService {
 
     public List<Order> getOrdersByAccountId(String idaccount) {
         return orderRepository.findByAccount_Idaccount(idaccount);
-    }
-    public List<Order> getOrdersByStatusId(Integer idstatus) {
-        return orderRepository.findByIdstatus_Idstatus(idstatus);
     }
     public List<Order> getOrdersByStatusPayId(Integer idstatuspay) {
         return orderRepository.findByIdstatuspay_Idstatuspay(idstatuspay);
@@ -69,7 +65,6 @@ public class OrderService {
             existingOrder.setAccount(orderDetails.getAccount());
             existingOrder.setPayment(orderDetails.getPayment());
             existingOrder.setTotal(orderDetails.getTotal());
-            existingOrder.setIdstatus(orderDetails.getIdstatus());
             existingOrder.setIdstatuspay(orderDetails.getIdstatuspay());
 
             // Kiểm tra nếu discount không có id
@@ -106,14 +101,14 @@ public class OrderService {
         }
         if (order.getPayment() == null || !paymentRepository.existsById(order.getPayment().getIdpayment())) {
             throw new IllegalArgumentException("Phương thức thanh toán không tồn tại.");
-        }if (order.getIdstatuspay() == null || !statusPayRepository.existsById(order.getIdstatuspay().getIdstatuspay())) {
+        }
+        if (order.getIdstatuspay() == null || !statusPayRepository.existsById(order.getIdstatuspay().getIdstatuspay())) {
             throw new IllegalArgumentException("Trạng thái thanh toán không tồn tại.");
         }
         if (order.getDiscount() != null && !discountRepository.existsById(order.getDiscount().getIddiscount())) {
             throw new IllegalArgumentException("Mã giảm giá không tồn tại.");
-        }if (order.getIdstatuspay() == null || !statusRepository.existsById(order.getIdstatus().getIdstatus())) {
-            throw new IllegalArgumentException("Trạng thái đơn hàng không tồn tại.");
         }
 
     }
+
 }
