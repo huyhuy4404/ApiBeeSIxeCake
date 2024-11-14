@@ -22,6 +22,8 @@ public class OrderService {
     @Autowired
     private StatusPayRepository statusPayRepository;
     @Autowired
+    private StatusRepository statusRepository;
+    @Autowired
     private DiscountRepository discountRepository;
 
     public List<Order> getAllOrders() {
@@ -61,6 +63,7 @@ public class OrderService {
             existingOrder.setAccount(orderDetails.getAccount());
             existingOrder.setPayment(orderDetails.getPayment());
             existingOrder.setTotal(orderDetails.getTotal());
+            existingOrder.setIdstatus(orderDetails.getIdstatus());
             existingOrder.setIdstatuspay(orderDetails.getIdstatuspay());
 
             // Kiểm tra nếu discount không có id
@@ -97,11 +100,14 @@ public class OrderService {
         }
         if (order.getPayment() == null || !paymentRepository.existsById(order.getPayment().getIdpayment())) {
             throw new IllegalArgumentException("Phương thức thanh toán không tồn tại.");
-        }if (order.getIdstatuspay() == null || !statusPayRepository.existsById(order.getIdstatuspay().getIdstatus())) {
+        }if (order.getIdstatuspay() == null || !statusPayRepository.existsById(order.getIdstatuspay().getIdstatuspay())) {
             throw new IllegalArgumentException("Trạng thái thanh toán không tồn tại.");
         }
         if (order.getDiscount() != null && !discountRepository.existsById(order.getDiscount().getIddiscount())) {
             throw new IllegalArgumentException("Mã giảm giá không tồn tại.");
+        }if (order.getIdstatuspay() == null || !statusRepository.existsById(order.getIdstatus().getIdstatus())) {
+            throw new IllegalArgumentException("Trạng thái đơn hàng không tồn tại.");
         }
+
     }
 }
