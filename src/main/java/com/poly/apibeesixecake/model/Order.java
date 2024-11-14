@@ -29,6 +29,7 @@ public class Order {
     @JoinColumn(name = "idpayment")
     private Payment payment;
 
-    @Column(name = "idstatuspay")
-    private Integer idstatuspay;
+    @ManyToOne
+    @JoinColumn(name = "idstatuspay")
+    private Status idstatuspay;
 }

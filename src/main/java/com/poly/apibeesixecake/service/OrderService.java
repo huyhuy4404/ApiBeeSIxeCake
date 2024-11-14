@@ -61,6 +61,7 @@ public class OrderService {
             existingOrder.setAccount(orderDetails.getAccount());
             existingOrder.setPayment(orderDetails.getPayment());
             existingOrder.setTotal(orderDetails.getTotal());
+            existingOrder.setIdstatuspay(orderDetails.getIdstatuspay());
 
             // Kiểm tra nếu discount không có id
             if (orderDetails.getDiscount() != null) {
@@ -96,7 +97,7 @@ public class OrderService {
         }
         if (order.getPayment() == null || !paymentRepository.existsById(order.getPayment().getIdpayment())) {
             throw new IllegalArgumentException("Phương thức thanh toán không tồn tại.");
-        }if (order.getIdstatuspay() == null || !statusPayRepository.existsById(order.getIdstatuspay())) {
+        }if (order.getIdstatuspay() == null || !statusPayRepository.existsById(order.getIdstatuspay().getIdstatus())) {
             throw new IllegalArgumentException("Trạng thái thanh toán không tồn tại.");
         }
         if (order.getDiscount() != null && !discountRepository.existsById(order.getDiscount().getIddiscount())) {
