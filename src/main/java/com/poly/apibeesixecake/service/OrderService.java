@@ -38,10 +38,10 @@ public class OrderService {
         return orderRepository.findByAccount_Idaccount(idaccount);
     }
     public List<Order> getOrdersByStatusId(Integer idstatus) {
-        return orderRepository.findByStatus_Idstatus(idstatus);
+        return orderRepository.findByIdstatus_Idstatus(idstatus);
     }
     public List<Order> getOrdersByStatusPayId(Integer idstatuspay) {
-        return orderRepository.findByStatusPay_Idstatuspay(idstatuspay);
+        return orderRepository.findByIdstatuspay_Idstatuspay(idstatuspay);
     }
 
     public Order createOrder(Order order) {
