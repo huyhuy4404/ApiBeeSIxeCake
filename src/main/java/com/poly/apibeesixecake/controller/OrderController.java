@@ -37,6 +37,16 @@ public class OrderController {
         List<Order> orders = orderService.getOrdersByAccountId(idaccount);
         return ResponseEntity.ok(orders);
     }
+    @GetMapping("/status/{idstatus}")
+    public ResponseEntity<List<Order>> getOrdersByStatusId(@PathVariable Integer idstatus) {
+        List<Order> orders = orderService.getOrdersByStatusId(idstatus);
+        return ResponseEntity.ok(orders);
+    }
+    @GetMapping("/statuspay/{idstatuspay}")
+    public ResponseEntity<List<Order>> getOrdersByStatusPayId(@PathVariable Integer idstatuspay) {
+        List<Order> orders = orderService.getOrdersByStatusPayId(idstatuspay);
+        return ResponseEntity.ok(orders);
+    }
 
     @PostMapping
     public ResponseEntity<?> createOrder(@RequestBody Order order) {

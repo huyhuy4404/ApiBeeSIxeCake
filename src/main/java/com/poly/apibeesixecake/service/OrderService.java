@@ -37,6 +37,12 @@ public class OrderService {
     public List<Order> getOrdersByAccountId(String idaccount) {
         return orderRepository.findByAccount_Idaccount(idaccount);
     }
+    public List<Order> getOrdersByStatusId(Integer idstatus) {
+        return orderRepository.findByStatus_Idstatus(idstatus);
+    }
+    public List<Order> getOrdersByStatusPayId(Integer idstatuspay) {
+        return orderRepository.findByStatusPay_Idstatuspay(idstatuspay);
+    }
 
     public Order createOrder(Order order) {
         // Kiểm tra nếu discount không có id
