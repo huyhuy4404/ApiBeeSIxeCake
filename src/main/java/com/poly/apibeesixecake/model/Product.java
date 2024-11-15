@@ -18,7 +18,7 @@ public class Product {
     private String description;
 
     private Boolean isactive;
-
+    private Integer favorite;
     @ManyToOne
     @JoinColumn(name = "idcategory", nullable = false) // Thêm nullable = false nếu idcategory không được phép null
     private Category category;

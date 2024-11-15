@@ -44,6 +44,7 @@ public class ProductController {
                                            @RequestParam("img") String img,
                                            @RequestParam("description") String description,
                                            @RequestParam("isactive") Boolean isactive,
+                                           @RequestParam("favorite") Integer favorite,
                                            @RequestParam("category.idcategory") Integer categoryId) {
         try {
             // Kiểm tra các tham số bắt buộc
@@ -57,6 +58,7 @@ public class ProductController {
             product.setImg(img);
             product.setDescription(description);
             product.setIsactive(isactive);
+            product.setFavorite(favorite);
 
             // Tìm kiếm danh mục
             Category category = categoryService.getCategoryById(categoryId);

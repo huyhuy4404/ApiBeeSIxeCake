@@ -58,6 +58,7 @@ public class ProductService {
             product.setImg(productDetails.getImg());
             product.setDescription(productDetails.getDescription());
             product.setIsactive(productDetails.getIsactive());
+            product.setFavorite(productDetails.getFavorite());
 
             Integer categoryId = productDetails.getCategory().getIdcategory();
             Optional<Category> category = categoryRepository.findById(categoryId);
