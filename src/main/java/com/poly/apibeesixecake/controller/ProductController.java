@@ -40,28 +40,15 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createProduct(@RequestParam("productname") String productname,
-                                           @RequestParam("img") String img,
-                                           @RequestParam("description") String description,
-                                           @RequestParam("isactive") Boolean isactive,
-                                           @RequestParam("favorite") Integer favorite,
-                                           @RequestParam("category.idcategory") Integer categoryId) {
+    public ResponseEntity<?> createProduct(@RequestBody Product product) {
         try {
             // Kiểm tra các tham số bắt buộc
-            if (productname == null || productname.trim().isEmpty()) {
+            if (product.getProductname() == null || product.getProductname().trim().isEmpty()) {
                 throw new IllegalArgumentException("Tên sản phẩm không được để trống.");
             }
 
-            // Tạo đối tượng Product và thiết lập các thuộc tính
-            Product product = new Product();
-            product.setProductname(productname);
-            product.setImg(img);
-            product.setDescription(description);
-            product.setIsactive(isactive);
-            product.setFavorite(favorite);
-
             // Tìm kiếm danh mục
-            Category category = categoryService.getCategoryById(categoryId);
+            Category category = categoryService.getCategoryById(product.getCategory().getIdcategory());
             if (category == null) {
                 throw new IllegalArgumentException("Danh mục không tồn tại.");
             }
@@ -75,6 +62,7 @@ public class ProductController {
             }});
         }
     }
+
 
     @PutMapping("/{idproduct}")
     public ResponseEntity<?> updateProduct(@PathVariable Integer idproduct, @RequestBody Product productDetails) {
