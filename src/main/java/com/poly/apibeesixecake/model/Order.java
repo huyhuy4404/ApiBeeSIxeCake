@@ -31,5 +31,5 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "idstatuspay")
-    private StatusPay idstatuspay;
+    private StatusPay statuspay;
 }

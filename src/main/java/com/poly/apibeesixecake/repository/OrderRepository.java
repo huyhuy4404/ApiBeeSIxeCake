@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
     List<Order> findByAccount_Idaccount(String idaccount);
-    List<Order> findByIdstatuspay_Idstatuspay(Integer idstatuspay);
+    List<Order> findBystatuspay_Idstatuspay(Integer idstatuspay);
 
 }
