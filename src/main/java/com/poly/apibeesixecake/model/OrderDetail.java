@@ -11,7 +11,7 @@ public class OrderDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idorderdetail;
     private Integer quantity;
-
+    private Boolean statusreview;
     @ManyToOne
     @JoinColumn(name = "idorder")
     private Order order;

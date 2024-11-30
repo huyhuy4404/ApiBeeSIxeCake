@@ -72,28 +72,42 @@ public class OrderDetailService {
     }
 
     public OrderDetail updateOrderDetail(Integer idorderdetail, OrderDetail orderDetailDetails) {
+        // Tìm OrderDetail theo ID
         OrderDetail orderDetail = orderDetailRepository.findById(idorderdetail)
                 .orElseThrow(() -> new IllegalArgumentException("Chi tiết đơn hàng không tồn tại."));
 
-        Integer orderId = orderDetailDetails.getOrder().getIdorder();
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("Đơn hàng không tồn tại."));
-
-        Integer productDetailId = orderDetailDetails.getProductdetail().getIdproductdetail();
-        ProductDetail productDetail = productDetailRepository.findById(productDetailId)
-                .orElseThrow(() -> new IllegalArgumentException("Chi tiết sản phẩm không tồn tại."));
-
-        // Kiểm tra số lượng tối đa có thể cập nhật
-        if (orderDetailDetails.getQuantity() > productDetail.getQuantityinstock()) {
-            throw new IllegalArgumentException("Số lượng không được lớn hơn số lượng tồn kho.");
+        // Chỉ cập nhật trường statusreview nếu orderDetailDetails.getStatusreview() != null
+        if (orderDetailDetails.getStatusreview() != null) {
+            orderDetail.setStatusreview(orderDetailDetails.getStatusreview());
         }
 
-        orderDetail.setOrder(order);
-        orderDetail.setProductdetail(productDetail);
-        orderDetail.setQuantity(orderDetailDetails.getQuantity());
+        // Kiểm tra các trường khác chỉ khi cần thiết
+        if (orderDetailDetails.getOrder() != null) {
+            Integer orderId = orderDetailDetails.getOrder().getIdorder();
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new IllegalArgumentException("Đơn hàng không tồn tại."));
+            orderDetail.setOrder(order);
+        }
 
+        if (orderDetailDetails.getProductdetail() != null) {
+            Integer productDetailId = orderDetailDetails.getProductdetail().getIdproductdetail();
+            ProductDetail productDetail = productDetailRepository.findById(productDetailId)
+                    .orElseThrow(() -> new IllegalArgumentException("Chi tiết sản phẩm không tồn tại."));
+            orderDetail.setProductdetail(productDetail);
+        }
+
+        // Kiểm tra số lượng trước khi cập nhật
+        if (orderDetailDetails.getQuantity() != null) {
+            if (orderDetailDetails.getQuantity() > orderDetail.getProductdetail().getQuantityinstock()) {
+                throw new IllegalArgumentException("Số lượng không được lớn hơn số lượng tồn kho.");
+            }
+            orderDetail.setQuantity(orderDetailDetails.getQuantity());
+        }
+
+        // Lưu lại và trả về
         return orderDetailRepository.save(orderDetail);
     }
+
 
     public void deleteOrderDetail(Integer idorderdetail) {
         if (!orderDetailRepository.existsById(idorderdetail)) {
