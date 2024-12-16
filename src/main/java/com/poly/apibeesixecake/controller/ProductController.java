@@ -64,6 +64,7 @@ public class ProductController {
     }
 
 
+
     @PutMapping("/{idproduct}")
     public ResponseEntity<?> updateProduct(@PathVariable Integer idproduct, @RequestBody Product productDetails) {
         try {
@@ -75,7 +76,6 @@ public class ProductController {
             }});
         }
     }
-
     @DeleteMapping("/{idproduct}")
     public ResponseEntity<?> deleteProduct(@PathVariable Integer idproduct) {
         try {

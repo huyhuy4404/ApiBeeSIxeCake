@@ -56,6 +56,14 @@ public class ProductDetailService {
         ProductDetail productDetail = productDetailRepository.findById(idproductdetail)
                 .orElseThrow(() -> new IllegalArgumentException("Chi tiết sản phẩm không tồn tại."));
 
+        // Kiểm tra xem đơn giá và số lượng tồn kho có hợp lệ không
+        if (productDetailDetails.getUnitprice() == null || productDetailDetails.getUnitprice() <= 0) {
+            throw new IllegalArgumentException("Đơn giá phải là một số dương hợp lệ.");
+        }
+        if (productDetailDetails.getQuantityinstock() == null || productDetailDetails.getQuantityinstock() < 0) {
+            throw new IllegalArgumentException("Số lượng tồn kho phải là số dương hợp lệ.");
+        }
+
         Integer productId = productDetailDetails.getProduct().getIdproduct();
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Sản phẩm không tồn tại."));
